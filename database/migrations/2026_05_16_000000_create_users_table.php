@@ -15,7 +15,9 @@ return new class extends Migration
             $blueprint->id();
             $blueprint->string('name');
             $blueprint->string('email')->unique();
+            $blueprint->timestamp('email_verified_at')->nullable();
             $blueprint->string('password');
+            $blueprint->rememberToken();
             $blueprint->enum('role', ['admin', 'user'])->default('user');
             $blueprint->timestamps();
         });

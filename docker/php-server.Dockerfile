@@ -28,6 +28,7 @@ RUN chmod -R 775 ./storage\
 RUN composer install
 
 COPY --chmod=+x ./docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
+RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint
 
 ENTRYPOINT ["docker-entrypoint"]
 

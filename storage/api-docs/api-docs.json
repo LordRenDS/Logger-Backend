@@ -1,0 +1,333 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Logger API",
+        "description": "API for PC activity recording and synchronization.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api"
+        }
+    ],
+    "paths": {
+        "/api/v1/auth/register": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Register a new user",
+                "operationId": "15ab81fc91b8e90f74ea030fc44604ca",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "secret123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "secret123"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "enum": [
+                                            "admin",
+                                            "user"
+                                        ],
+                                        "example": "user"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful registration"
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Login with email and password",
+                "operationId": "5f72bb27f75e659cb11d621b660feaf8",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "secret123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful login"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/me": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Get the authenticated user",
+                "operationId": "de25913d74f2944f46950a52ab0b23ec",
+                "responses": {
+                    "200": {
+                        "description": "User data"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Logout the current user",
+                "operationId": "95268babc80be6aea5dffe685834b88c",
+                "responses": {
+                    "200": {
+                        "description": "Successful logout"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/refresh": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Refresh the authentication token",
+                "operationId": "cb9197f9c26fa7d793723cdfa7822541",
+                "responses": {
+                    "200": {
+                        "description": "New token"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/sync/processes": {
+            "post": {
+                "tags": [
+                    "Synchronization"
+                ],
+                "summary": "Sync processes activity logs",
+                "operationId": "ddb668324d76575a61fe8c897980e944",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "pc_unique_id": {
+                                        "type": "string",
+                                        "example": "pc-123"
+                                    },
+                                    "pc_name": {
+                                        "type": "string",
+                                        "example": "Work PC"
+                                    },
+                                    "data": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "process_start": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "process_name": {
+                                                    "type": "string"
+                                                },
+                                                "window_name": {
+                                                    "type": "string"
+                                                },
+                                                "duration": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sync successful"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/sync/schedules": {
+            "post": {
+                "tags": [
+                    "Synchronization"
+                ],
+                "summary": "Sync PC status history",
+                "operationId": "90a2b1b41235ea23fc412a0e78a3c1e3",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "pc_unique_id": {
+                                        "type": "string",
+                                        "example": "pc-123"
+                                    },
+                                    "pc_name": {
+                                        "type": "string",
+                                        "example": "Work PC"
+                                    },
+                                    "data": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "timestamp": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "on",
+                                                        "off"
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sync successful"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            },
+            "jwt": {
+                "type": "http",
+                "description": "jwt token",
+                "scheme": "Bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Authentication",
+            "description": "Authentication"
+        },
+        {
+            "name": "Synchronization",
+            "description": "Synchronization"
+        }
+    ],
+    "security": [
+        {
+            "jwt": []
+        }
+    ]
+}

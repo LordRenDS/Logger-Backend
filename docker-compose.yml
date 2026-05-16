@@ -12,6 +12,7 @@ services:
       - LOGFILE_NAME="server-laravel.log"
     volumes:
       - .:/app
+      - /app/vendor
     depends_on:
       - db
 
@@ -20,8 +21,7 @@ services:
     env_file:
       - db.env
     volumes:
-      - logger-postgres-data:/var/lib/postgresql/data
-      - ./docker/initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
+      - logger-postgres-data:/var/lib/postgresql
     ports:
       - 127.0.0.1:5432:5432
 
