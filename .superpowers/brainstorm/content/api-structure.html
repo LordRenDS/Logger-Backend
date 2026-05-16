@@ -1,0 +1,41 @@
+<h2>Архітектура REST API та Синхронізація</h2>
+<p class="subtitle">Пропонована структура ендпоінтів на основі вашої схеми БД</p>
+
+<div class="cards">
+  <div class="card" data-choice="processes" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>POST /api/v1/sync/processes</h3>
+      <p>Синхронізація активності вікон. Приймає масив об'єктів: UniqueID, start, name, window, duration.</p>
+    </div>
+  </div>
+  
+  <div class="card" data-choice="schedules" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>POST /api/v1/sync/schedules</h3>
+      <p>Запис статусів ПК (Ввімкнено/Вимкнено). Передає timestamp та статус.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="register" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>POST /api/v1/pc/register</h3>
+      <p>Реєстрація нового ПК в системі. Повертає <b>API Key</b> для подальшої авторизації.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Логіка автентифікації (API Key)</h3>
+  <p>Кожен запит від десктопного застосунку повинен містити заголовок: <br><code>X-API-KEY: [ваш_ключ]</code></p>
+</div>
+
+<div class="pros-cons">
+  <div class="pros">
+    <h4>Переваги обраного підходу</h4>
+    <ul>
+      <li>Проста реалізація на стороні клієнта (WinForms).</li>
+      <li>Надійна прив'язка даних до конкретного ПК.</li>
+      <li>Можливість легко анулювати доступ для окремого пристрою.</li>
+    </ul>
+  </div>
+</div>

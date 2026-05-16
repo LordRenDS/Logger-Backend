@@ -1,0 +1,57 @@
+<h2>Схема синхронізації (Batching)</h2>
+<p class="subtitle">Формат пакетної передачі даних від клієнта до сервера</p>
+
+<div class="mockup">
+  <div class="mockup-header">Приклад JSON для /api/v1/sync/processes</div>
+  <div class="mockup-body">
+    <pre style="background: #2d2d2d; color: #ccc; padding: 1rem; border-radius: 4px;">
+{
+  "pc_id": "uuid-of-the-pc",
+  "data": [
+    {
+      "id": "client-uuid-1",
+      "process_start": "2026-05-16T22:45:00Z",
+      "process_name": "chrome.exe",
+      "window_title": "Gemini CLI - Workspace",
+      "duration": 120
+    },
+    {
+      "id": "client-uuid-2",
+      "process_start": "2026-05-16T22:47:00Z",
+      "process_name": "devenv.exe",
+      "window_title": "Logger-Backend (Running)",
+      "duration": 300
+    }
+  ]
+}
+    </pre>
+  </div>
+</div>
+
+<div class="section">
+  <h3>База даних (PostgreSQL)</h3>
+  <div class="cards">
+    <div class="card">
+      <div class="card-body">
+        <h4>PCs Table</h4>
+        <p>Зберігає назву ПК та API Key. Зв'язаний з таблицею <b>Admins</b> (користувачами веб-панелі).</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h4>Processes Table</h4>
+        <p>Використовує <b>UUID</b> як первинний ключ (для уникнення конфліктів при синхронізації з різних пристроїв).</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Docker Compose Інфраструктура</h3>
+  <ul>
+    <li><b>app:</b> PHP 8.3 FPM (Laravel)</li>
+    <li><b>web:</b> Nginx</li>
+    <li><b>db:</b> PostgreSQL 16</li>
+    <li><b>network:</b> logger-network</li>
+  </ul>
+</div>

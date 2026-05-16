@@ -18,9 +18,12 @@ class Process extends Model
         'duration',
     ];
 
-    protected $casts = [
-        'process_start' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'process_start' => 'datetime',
+        ];
+    }
 
     public function pc(): BelongsTo
     {

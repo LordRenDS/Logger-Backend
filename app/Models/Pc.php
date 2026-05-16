@@ -18,9 +18,12 @@ class Pc extends Model
         'last_seen_at',
     ];
 
-    protected $casts = [
-        'last_seen_at' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'last_seen_at' => 'datetime',
+        ];
+    }
 
     public function user(): BelongsTo
     {

@@ -16,9 +16,12 @@ class Schedule extends Model
         'pc_status_id',
     ];
 
-    protected $casts = [
-        'timestamp' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'timestamp' => 'datetime',
+        ];
+    }
 
     public function pc(): BelongsTo
     {

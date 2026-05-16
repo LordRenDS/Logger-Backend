@@ -1,0 +1,35 @@
+<h2>Підходи до Реалізації</h2>
+<p class="subtitle">Порівняння архітектурних рішень для вашого сервера</p>
+
+<div class="options">
+  <div class="option" data-choice="sanctum" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Laravel Sanctum (Рекомендовано)</h3>
+      <p><b>Стандартний підхід:</b> Використання токенів (Personal Access Tokens). WinForms логіниться один раз, отримує довгий токен і використовує його для всіх наступних запитів.</p>
+      <ul>
+        <li>Нативна підтримка в Laravel.</li>
+        <li>Висока безпека.</li>
+        <li>Легке керування сесіями пристроїв.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="option" data-choice="custom" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Custom API Keys</h3>
+      <p><b>Спрощений підхід:</b> Власна таблиця ключів. Кожен логін просто повертає статичний ключ користувача.</p>
+      <ul>
+        <li>Менше коду.</li>
+        <li>Простіше для WinForms клієнта.</li>
+        <li>Важче реалізувати безпечне відкликання доступу для конкретного пристрою.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Моя рекомендація: Варіант A</h3>
+  <p>Laravel Sanctum ідеально підходить для поєднання SPA/Mobile/Desktop додатків з одним бекендом. Це дозволить вам у майбутньому легко додати мобільний додаток або інші типи клієнтів без переписування авторизації.</p>
+</div>
