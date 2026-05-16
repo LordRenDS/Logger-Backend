@@ -25,3 +25,4 @@ yarn-error.log
 *.env
 docker.ps1
 /schemes
+.superpowers/
