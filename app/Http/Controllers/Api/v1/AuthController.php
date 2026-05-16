@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
-use App\Http\Services\AuthService;
+use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -47,12 +47,12 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $token = $this->authService->register($request->all());
 
-        return $this->respondWithToken($token);
+        return $this->respondWithToken($token)->setStatusCode(201);
     }
 
     /**
