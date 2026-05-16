@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 class SyncService
 {
     /**
-     * Sync processes activity logs.
+     * Sync processes activity logs using batch insertion.
      *
      * @param Pc $pc
      * @param array $data
@@ -19,24 +19,26 @@ class SyncService
      */
     public function syncProcesses(Pc $pc, array $data): int
     {
-        return DB::transaction(function () use ($pc, $data) {
-            $count = 0;
-            foreach ($data as $item) {
-                Process::create([
-                    'pc_id' => $pc->id,
-                    'process_start' => $item['process_start'],
-                    'process_name' => $item['process_name'],
-                    'window_name' => $item['window_name'],
-                    'duration' => $item['duration'],
-                ]);
-                $count++;
-            }
-            return $count;
+        $records = array_map(function ($item) use ($pc) {
+            return [
+                'pc_id' => $pc->id,
+                'process_start' => $item['process_start'],
+                'process_name' => $item['process_name'],
+                'window_name' => $item['window_name'],
+                'duration' => $item['duration'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }, $data);
+
+        return DB::transaction(function () use ($records) {
+            Process::insert($records);
+            return count($records);
         });
     }
 
     /**
-     * Sync PC schedules (status history).
+     * Sync PC schedules (status history) using batch insertion and status mapping cache.
      *
      * @param Pc $pc
      * @param array $data
@@ -44,20 +46,29 @@ class SyncService
      */
     public function syncSchedules(Pc $pc, array $data): int
     {
-        return DB::transaction(function () use ($pc, $data) {
-            $count = 0;
-            foreach ($data as $item) {
-                $status = PcStatus::where('status', $item['status'])->first();
-                if ($status) {
-                    Schedule::create([
-                        'pc_id' => $pc->id,
-                        'timestamp' => $item['timestamp'],
-                        'pc_status_id' => $status->id,
-                    ]);
-                    $count++;
-                }
+        // Cache statuses to avoid N+1 queries
+        $statuses = PcStatus::all()->pluck('id', 'status')->toArray();
+        $records = [];
+
+        foreach ($data as $item) {
+            if (isset($statuses[$item['status']])) {
+                $records[] = [
+                    'pc_id' => $pc->id,
+                    'timestamp' => $item['timestamp'],
+                    'pc_status_id' => $statuses[$item['status']],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
             }
-            return $count;
+        }
+
+        if (empty($records)) {
+            return 0;
+        }
+
+        return DB::transaction(function () use ($records) {
+            Schedule::insert($records);
+            return count($records);
         });
     }
 }

@@ -21,10 +21,13 @@ class PcService
         $pc = Pc::where('unique_id', $uniqueId)->first();
 
         if ($pc) {
+            if ($pc->user_id !== $user->id) {
+                throw new \Illuminate\Auth\Access\AuthorizationException('This device is registered to another user.');
+            }
+
             $pc->update([
                 'last_seen_at' => Carbon::now(),
                 'name' => $name ?? $pc->name,
-                'user_id' => $user->id,
             ]);
         } else {
             $pc = Pc::create([
