@@ -25,3 +25,5 @@ composer.lock
 docker.ps1
 /schemes
 .superpowers/
+GEMINI.md
+docs/
