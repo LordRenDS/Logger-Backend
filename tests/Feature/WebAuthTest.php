@@ -2,17 +2,32 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class WebAuthTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
-     * Test root redirect to dashboard.
+     * Test root redirects unauthenticated user to register.
      */
-    public function test_root_redirects_to_dashboard(): void
+    public function test_root_redirects_unauthenticated_to_register(): void
     {
         $response = $this->get('/');
+
+        $response->assertRedirect('/register');
+    }
+
+    /**
+     * Test root redirects authenticated user to dashboard.
+     */
+    public function test_root_redirects_authenticated_to_dashboard(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/');
 
         $response->assertRedirect('/dashboard');
     }
