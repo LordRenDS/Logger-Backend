@@ -11,6 +11,28 @@ The server is built using **PHP 8.4 (Laravel 12)** and **PostgreSQL 18**.
 - **Monitoring**: Blade-based dashboard for real-time activity overview and historical analysis.
 - **Documentation**: Built-in OpenAPI 3.1 (Swagger) documentation for API integration.
 - **Deployment**: Fully dockerized environment (Apache, PHP-FPM, PostgreSQL). Requires `db.env` for database and admin account auto-creation.
+# PROJECT NUANCES & PITFALLS
+
+### 1. Environment Variables vs. Config Caching (Docker)
+In a production-like Docker environment, Laravel's `config:cache` is often run during the entrypoint. When config is cached, `env()` calls outside of configuration files return `null`.
+- **Pitfall:** `DatabaseSeeder` originally failed to create the admin because it used `env('ADMIN_EMAIL')` directly.
+- **Solution:** Admin credentials were moved to `config/app.php` and accessed via `config('app.admin.email')`.
+
+### 2. Session Permissions in Docker
+The `app` container runs Apache/PHP-FPM as the `www-data` user, but commands run via `docker compose exec` often run as `root` by default.
+- **Pitfall:** Running tests or commands as `root` can create session or cache files that `www-data` cannot later overwrite, leading to 500 errors or "Permission Denied" warnings.
+- **Nuance:** Always ensure `storage` and `bootstrap/cache` have `775` permissions and are owned by `www-data`. Use `docker compose exec -u www-data app ...` for application commands to maintain consistency.
+
+### 3. Hybrid Authentication Guard Conflicts (JWT + Session)
+The project uses `web` (Session) for the dashboard and `api` (JWT) for WinForms clients.
+- **Pitfall:** Standard Laravel Breeze tests may fail in the Docker environment if the `AUTH_GUARD` isn't explicitly managed or if CSRF/Session state is lost between different auth mechanisms.
+- **Nuance:** Testing session-based authentication in a hybrid environment requires careful session management. Manual verification of the database (`psql`) is often more reliable than automated session tests in complex Docker setups.
+
+### 4. Docker Compose Environment Sharing
+By default, services in Docker Compose don't share environment variables unless explicitly linked.
+- **Nuance:** The `app` service must explicitly include `db.env` in its `env_file` list to access credentials shared with the database service.
+
 # COMMIT MESSAGE
+
 Write commits only as a list with a '-' separator at the beginning, each change on a new line and in lowercase.
 Do not write changes in each file if you can logically group changes from several files. Use the English language.
