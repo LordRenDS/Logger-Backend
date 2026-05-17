@@ -17,9 +17,9 @@ class DatabaseSeeder extends Seeder
             PcStatusSeeder::class,
         ]);
 
-        $adminName = env('ADMIN_NAME');
-        $adminEmail = env('ADMIN_EMAIL');
-        $adminPassword = env('ADMIN_PASSWORD');
+        $adminName = config('app.admin.name');
+        $adminEmail = config('app.admin.email');
+        $adminPassword = config('app.admin.password');
 
         if ($adminName && $adminEmail && $adminPassword) {
             User::firstOrCreate(
