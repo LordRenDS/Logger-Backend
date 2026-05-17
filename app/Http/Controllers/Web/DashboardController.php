@@ -11,31 +11,24 @@ use Illuminate\Support\Facades\Auth;
 class DashboardController extends Controller
 {
     /**
-     * User dashboard: list own PCs and their activities.
+     * Dashboard: list own PCs or all users based on role.
      */
     public function index()
     {
         $user = Auth::user();
+
+        if ($user->role === 'admin') {
+            $users = User::with(['pcs' => function ($query) {
+                $query->withCount('processes');
+            }])->get();
+
+            return view('dashboard', compact('users'));
+        }
+
         $pcs = $user->pcs()->with(['processes' => function ($query) {
             $query->latest('process_start')->limit(10);
         }])->get();
 
         return view('dashboard', compact('pcs'));
-    }
-
-    /**
-     * Admin dashboard: list all users and their PCs.
-     */
-    public function adminIndex()
-    {
-        if (Auth::user()->role !== 'admin') {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $users = User::with(['pcs' => function ($query) {
-            $query->withCount('processes');
-        }])->get();
-
-        return view('admin.dashboard', compact('users'));
     }
 }
