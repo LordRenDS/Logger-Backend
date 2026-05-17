@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@content
+@section('content')
 <div class="space-y-6">
     <h1 class="text-3xl font-bold text-gray-900">Your Devices</h1>
 
@@ -41,4 +41,4 @@
         </div>
     @endforeach
 </div>
-@endcontent
+@endsection
