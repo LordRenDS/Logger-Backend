@@ -26,7 +26,7 @@ A high-performance Laravel 12 backend for tracking and analyzing PC activity acr
 - (Windows Users) Git configured to handle line endings correctly or a tool to convert CRLF to LF for scripts.
 
 ### 2. Setup Environment
-Copy the example environment files and adjust variables if necessary:
+Copy the example environment files and adjust variables if necessary (`db.env` is mandatory for the application and database containers):
 ```bash
 cp .env.example .env
 cp db.env.example db.env
