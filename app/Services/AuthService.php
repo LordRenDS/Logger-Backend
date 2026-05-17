@@ -20,7 +20,7 @@ class AuthService
             'role' => $data['role'] ?? 'user',
         ]);
 
-        return Auth::login($user);
+        return Auth::guard('api')->login($user);
     }
 
     /**
@@ -28,7 +28,7 @@ class AuthService
      */
     public function login(array $credentials): ?string
     {
-        if (!$token = Auth::attempt($credentials)) {
+        if (!$token = Auth::guard('api')->attempt($credentials)) {
             return null;
         }
 
@@ -40,7 +40,7 @@ class AuthService
      */
     public function logout(): void
     {
-        Auth::logout();
+        Auth::guard('api')->logout();
     }
 
     /**
@@ -48,7 +48,7 @@ class AuthService
      */
     public function refresh(): string
     {
-        return Auth::refresh();
+        return Auth::guard('api')->refresh();
     }
 
     /**
@@ -56,6 +56,6 @@ class AuthService
      */
     public function getAuthUser(): ?User
     {
-        return Auth::user();
+        return Auth::guard('api')->user();
     }
 }

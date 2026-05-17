@@ -33,6 +33,19 @@ cp db.env.example db.env
 ```
 *Important: Ensure that `DB_PASSWORD` in `.env` matches `POSTGRES_PASSWORD` in `db.env`.*
 
+**Initial Admin Account**:
+You can define an initial admin account in `db.env` using `ADMIN_NAME`, `ADMIN_EMAIL`, and `ADMIN_PASSWORD`. These will be used by the seeder to create the first admin user automatically.
+
+### Environment Variables (db.env)
+| Variable | Description |
+|----------|-------------|
+| `POSTGRES_USER` | DB user for PostgreSQL |
+| `POSTGRES_PASSWORD` | DB password |
+| `POSTGRES_DB` | Main database name |
+| `ADMIN_NAME` | Name for the auto-created admin |
+| `ADMIN_EMAIL` | Email for the admin account |
+| `ADMIN_PASSWORD` | Password for the admin account |
+
 ### 3. Build and Run Containers
 ```bash
 docker-compose up -d --build
