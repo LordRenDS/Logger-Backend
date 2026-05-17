@@ -46,6 +46,19 @@ You can define an initial admin account in `db.env` using `ADMIN_NAME`, `ADMIN_E
 | `ADMIN_EMAIL` | Email for the admin account |
 | `ADMIN_PASSWORD` | Password for the admin account |
 
+### Email Configuration (Password Reset)
+Password reset functionality is included by default via Laravel Breeze. However, `MAIL_MAILER` in `.env.example` is set to `log` for local development, which writes emails to `storage/logs/laravel.log` rather than sending them.
+To enable real email delivery for password resets, update the `MAIL_*` variables in your `.env` file with proper SMTP credentials:
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=your_username
+MAIL_PASSWORD=your_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS="no-reply@example.com"
+```
+
 ### 3. Build and Run Containers
 ```bash
 docker-compose up -d --build
