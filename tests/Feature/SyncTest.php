@@ -70,6 +70,59 @@ class SyncTest extends TestCase
     }
 
     /**
+     * Test upserting processes (incremental sync).
+     */
+    public function test_can_upsert_processes(): void
+    {
+        $startTime = now()->subMinutes(10)->toDateTimeString();
+        
+        // First sync
+        $this->withHeader('Authorization', 'Bearer ' . $this->token)
+            ->postJson('/api/v1/sync/processes', [
+                'pc_unique_id' => 'pc-upsert',
+                'pc_name' => 'Upsert PC',
+                'data' => [
+                    [
+                        'process_start' => $startTime,
+                        'process_name' => 'chrome.exe',
+                        'window_name' => 'Google Search',
+                        'duration' => 60,
+                    ],
+                ],
+            ]);
+
+        $this->assertDatabaseCount('processes', 1);
+        $this->assertDatabaseHas('processes', [
+            'process_name' => 'chrome.exe',
+            'duration' => 60,
+        ]);
+
+        // Second sync with updated duration
+        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+            ->postJson('/api/v1/sync/processes', [
+                'pc_unique_id' => 'pc-upsert',
+                'data' => [
+                    [
+                        'process_start' => $startTime,
+                        'process_name' => 'chrome.exe',
+                        'window_name' => 'Google Search',
+                        'duration' => 120, // Duration increased
+                    ],
+                ],
+            ]);
+
+        $response->assertStatus(200)
+            ->assertJson(['count' => 1]);
+
+        // Should still be only 1 record, but with updated duration
+        $this->assertDatabaseCount('processes', 1);
+        $this->assertDatabaseHas('processes', [
+            'process_name' => 'chrome.exe',
+            'duration' => 120,
+        ]);
+    }
+
+    /**
      * Test syncing schedules.
      */
     public function test_can_sync_schedules(): void

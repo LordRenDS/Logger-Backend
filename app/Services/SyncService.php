@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 class SyncService
 {
     /**
-     * Sync processes activity logs using batch insertion.
+     * Sync processes activity logs using batch upsertion.
      *
      * @param Pc $pc
      * @param array $data
@@ -32,7 +32,14 @@ class SyncService
         }, $data);
 
         return DB::transaction(function () use ($records) {
-            Process::insert($records);
+            // Use upsert to update duration for existing records
+            // Unique index: pc_id, process_start, process_name, window_name
+            // Columns to update: duration, updated_at
+            Process::upsert(
+                $records,
+                ['pc_id', 'process_start', 'process_name', 'window_name'],
+                ['duration', 'updated_at']
+            );
             return count($records);
         });
     }
