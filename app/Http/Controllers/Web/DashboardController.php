@@ -15,15 +15,11 @@ class DashboardController extends Controller
         $perPage = session('per_page', 15);
 
         if ($user->role === 'admin') {
-            $users = User::with(['pcs' => function ($query) {
-                $query->withCount('processes');
-            }])->paginate($perPage);
+            $users = User::withCount('pcs')->paginate($perPage);
             return view('dashboard', compact('users'));
         }
 
-        $pcs = $user->pcs()->with(['processes' => function ($query) {
-            $query->latest('process_start')->limit(10);
-        }])->paginate($perPage);
+        $pcs = $user->pcs()->paginate($perPage);
         return view('dashboard', compact('pcs'));
     }
 
