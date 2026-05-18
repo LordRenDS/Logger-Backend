@@ -19,8 +19,7 @@ class DashboardTest extends TestCase
         $response = $this->get('/dashboard');
 
         $response->assertStatus(200);
-        // Note: View assertions depend on the Blade file which might have changed
-        // But we expect the status to be 200 and the collection to be passed
+        $response->assertSee('Your Devices');
     }
 
     public function test_admin_can_see_all_users_on_dashboard()
@@ -31,10 +30,12 @@ class DashboardTest extends TestCase
         $response = $this->get('/dashboard');
 
         $response->assertStatus(200);
+        $response->assertSee('Admin Dashboard - All Users');
     }
 
     public function test_user_can_update_per_page_setting()
     {
+        $this->withoutMiddleware();
         $user = User::factory()->create();
         $this->actingAs($user);
 
@@ -46,6 +47,7 @@ class DashboardTest extends TestCase
 
     public function test_per_page_validation()
     {
+        $this->withoutMiddleware();
         $user = User::factory()->create();
         $this->actingAs($user);
 
