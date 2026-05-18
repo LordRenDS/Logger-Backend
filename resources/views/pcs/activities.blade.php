@@ -32,16 +32,20 @@
     </div>
 
     @php
-        function sortUrl($column) {
-            $currentSort = request('sort_by');
-            $currentDir = request('sort_dir', 'desc');
-            $newDir = ($currentSort === $column && $currentDir === 'asc') ? 'desc' : 'asc';
-            
-            return request()->fullUrlWithQuery(['sort_by' => $column, 'sort_dir' => $newDir]);
+        if (!function_exists('sortUrl')) {
+            function sortUrl($column) {
+                $currentSort = request('sort_by');
+                $currentDir = request('sort_dir', 'desc');
+                $newDir = ($currentSort === $column && $currentDir === 'asc') ? 'desc' : 'asc';
+                
+                return request()->fullUrlWithQuery(['sort_by' => $column, 'sort_dir' => $newDir]);
+            }
         }
-        function sortIcon($column) {
-            if (request('sort_by') !== $column) return '';
-            return request('sort_dir', 'desc') === 'asc' ? ' ↑' : ' ↓';
+        if (!function_exists('sortIcon')) {
+            function sortIcon($column) {
+                if (request('sort_by') !== $column) return '';
+                return request('sort_dir', 'desc') === 'asc' ? ' ↑' : ' ↓';
+            }
         }
     @endphp
 
