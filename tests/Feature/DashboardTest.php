@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Models\Pc;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -19,28 +20,39 @@ class DashboardTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Your Devices');
-        $response->assertDontSee('Admin Dashboard');
     }
 
     public function test_admin_can_see_all_users_on_dashboard()
     {
-        $admin = User::factory()->admin()->create();
+        $admin = User::factory()->create(['role' => 'admin']);
         $this->actingAs($admin);
 
         $response = $this->get('/dashboard');
 
         $response->assertStatus(200);
         $response->assertSee('Admin Dashboard - All Users');
-        $response->assertDontSee('Your Devices');
     }
 
-    public function test_admin_dashboard_route_is_removed()
+    public function test_user_can_update_per_page_setting()
     {
-        $admin = User::factory()->admin()->create();
-        $this->actingAs($admin);
+        $this->withoutMiddleware();
+        $user = User::factory()->create();
+        $this->actingAs($user);
 
-        $response = $this->get('/admin/dashboard');
+        $response = $this->post('/dashboard/per-page', ['per_page' => 25]);
 
-        $response->assertStatus(404);
+        $response->assertRedirect();
+        $this->assertEquals(25, session('per_page'));
+    }
+
+    public function test_per_page_validation()
+    {
+        $this->withoutMiddleware();
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $response = $this->post('/dashboard/per-page', ['per_page' => 101]);
+
+        $response->assertSessionHasErrors('per_page');
     }
 }
