@@ -11,7 +11,7 @@ RUN apt-get update\
     && apt-get clean
 
 # install php extensions
-RUN install-php-extensions pdo_pgsql xdebug pcntl
+RUN install-php-extensions pdo_pgsql xdebug pcntl intl
 
 ENV DOCUMENT_ROOT=/app/public PHPRC=/app/php.ini
 WORKDIR /app

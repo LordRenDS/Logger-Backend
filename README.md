@@ -65,7 +65,7 @@ docker-compose up -d --build
 ```
 *Note: The first start will automatically:*
 - *Create `.env` if missing.*
-- *Generate the `APP_KEY`.*
+- *Generate the `APP_KEY` and `JWT_SECRET`.*
 - *Run `composer install` (during build).*
 - *Wait for the database to be ready.*
 - *Run migrations and seed the database.*
@@ -89,9 +89,9 @@ docker-compose exec app php artisan l5-swagger:generate
 
 ## 🧪 Testing
 
-Execute the test suite using PHPUnit inside the container:
+Execute the test suite using PHPUnit inside the container. It is recommended to run tests as the `www-data` user to avoid permission issues with the cache:
 ```bash
-docker-compose exec app php artisan test
+docker-compose exec -u www-data app php artisan test
 ```
 
 ## 🛠 Troubleshooting (Windows)

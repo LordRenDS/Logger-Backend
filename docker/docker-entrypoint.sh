@@ -15,6 +15,12 @@ if [ -f "./artisan" ]; then
         php artisan key:generate --force
     fi
 
+    # Generate JWT secret if not set
+    if ! grep -q "JWT_SECRET=" .env || [ -z "$(grep JWT_SECRET .env | cut -d '=' -f 2)" ]; then
+        echo "Generating JWT secret..."
+        php artisan jwt:secret --force
+    fi
+
     echo "Clearing and caching Laravel settings..."
     php artisan cache:clear || true
     php artisan config:cache || true
