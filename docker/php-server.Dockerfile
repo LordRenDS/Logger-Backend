@@ -27,7 +27,7 @@ RUN mkdir -p ./bootstrap/cache ./storage/framework/cache\
     && chown -R www-data:www-data ./storage ./bootstrap/cache\
     && chmod -R 775 ./storage ./bootstrap/cache
 
-RUN composer install
+RUN composer install && chown -R www-data:www-data ./vendor
 
 COPY --chmod=+x ./docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint

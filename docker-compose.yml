@@ -11,9 +11,9 @@ services:
       - db.env
     environment:
       - LOGFILE_NAME="server-laravel.log"
-    volumes:
-      - .:/app
-      - /app/vendor
+    # volumes:
+    #   - .:/app
+    #   - /app/vendor
     depends_on:
       - db
 
