@@ -22,8 +22,10 @@ COPY /docker/server.conf /etc/apache2/sites-available/000-default.conf
 
 COPY --chown=www-data:www-data --chmod=775 . .
 
-RUN chmod -R 775 ./storage\
-    && chmod -R 775 ./bootstrap/cache
+RUN mkdir -p ./bootstrap/cache ./storage/framework/cache\
+    ./storage/framework/sessions ./storage/framework/views ./storage/logs\
+    && chown -R www-data:www-data ./storage ./bootstrap/cache\
+    && chmod -R 775 ./storage ./bootstrap/cache
 
 RUN composer install
 
