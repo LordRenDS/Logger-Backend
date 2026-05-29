@@ -60,10 +60,26 @@ MAIL_FROM_ADDRESS="no-reply@example.com"
 ```
 
 ### 3. Build and Run Containers
+
+Depending on whether you are running a local development/testing environment or deploying to a production server, choose one of the options below:
+
+#### Option A: Local Development & Testing (Test Version)
+This launches the application with host project directory volume bind-mounts (for live-reload code changes) and spins up **Adminer** for database management:
 ```bash
-docker-compose up -d --build
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 ```
-*Note: The first start will automatically:*
+
+#### Option B: Production Server (Use Version)
+This launches a secure and optimized configuration without mounting host directories (code is loaded directly from the built Docker image) and without starting Adminer:
+```bash
+docker compose up -d --build
+```
+
+#### Option C: Coolify Deployment
+If you are deploying using **Coolify**, please read our dedicated guide:
+👉 [Coolify Deployment Guide](docs/deploy-coolify.md)
+
+*Note: The first start on any environment will automatically:*
 - *Create `.env` if missing.*
 - *Generate the `APP_KEY` and `JWT_SECRET`.*
 - *Run `composer install` (during build).*
@@ -72,15 +88,20 @@ docker-compose up -d --build
 
 ### 4. Generate API Documentation (Optional)
 If not generated automatically, you can run:
-```bash
-docker-compose exec app php artisan l5-swagger:generate
-```
+- **Local Dev:**
+  ```bash
+  docker compose -f docker-compose.yml -f docker-compose.dev.yml exec app php artisan l5-swagger:generate
+  ```
+- **Production:**
+  ```bash
+  docker compose exec app php artisan l5-swagger:generate
+  ```
 
 ## 🔗 Access Points
 
 - **Dashboard**: [http://localhost:8080/dashboard](http://localhost:8080/dashboard)
 - **API Documentation**: [http://localhost:8080/api/documentation](http://localhost:8080/api/documentation)
-- **Adminer (DB Management)**: [http://localhost:800](http://localhost:800)
+- **Adminer (DB Management - Local Dev only)**: [http://localhost:800](http://localhost:800)
   - *System*: PostgreSQL
   - *Server*: db
   - *Username*: user
@@ -91,7 +112,7 @@ docker-compose exec app php artisan l5-swagger:generate
 
 Execute the test suite using PHPUnit inside the container. It is recommended to run tests as the `www-data` user to avoid permission issues with the cache:
 ```bash
-docker-compose exec -u www-data app php artisan test
+docker compose -f docker-compose.yml -f docker-compose.dev.yml exec -u www-data app php artisan test
 ```
 
 ## 🛠 Troubleshooting (Windows)
@@ -101,9 +122,14 @@ If the `docker-entrypoint.sh` fails with `\r` errors, ensure the file uses **LF*
 
 ### Permissions
 If you encounter 500 errors related to logs or cache, reset permissions:
-```bash
-docker-compose exec app chown -R www-data:www-data storage bootstrap/cache
-```
+- **Local Dev:**
+  ```bash
+  docker compose -f docker-compose.yml -f docker-compose.dev.yml exec app chown -R www-data:www-data storage bootstrap/cache
+  ```
+- **Production:**
+  ```bash
+  docker compose exec app chown -R www-data:www-data storage bootstrap/cache
+  ```
 
 ## 📝 Commit Convention
 - Use a list with a `-` separator.
