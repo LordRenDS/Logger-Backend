@@ -1,19 +1,17 @@
 name: logger-backend
+
 services:
   app:
     build:
       context: .
       dockerfile: docker/php-server.Dockerfile
     ports:
-      - 127.0.0.1:${APP_PORT:-8080}:80
+      - "127.0.0.1:${APP_PORT:-8080}:80"
     env_file:
       - .env
       - db.env
     environment:
       - LOGFILE_NAME="server-laravel.log"
-    # volumes:
-    #   - .:/app
-    #   - /app/vendor
     depends_on:
       - db
 
@@ -24,14 +22,7 @@ services:
     volumes:
       - logger-postgres-data:/var/lib/postgresql
     ports:
-      - 127.0.0.1:${DB_PORT:-5432}:5432
-
-  adminer:
-    image: adminer:5
-    ports:
-      - 127.0.0.1:${ADMINER_PORT:-800}:8080
-    depends_on:
-      - db
+      - "127.0.0.1:${DB_PORT:-5432}:5432"
 
 volumes:
   logger-postgres-data:

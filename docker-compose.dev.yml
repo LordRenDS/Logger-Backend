@@ -1,0 +1,26 @@
+# ------------------------------------------------------------------------------
+# DOCKER COMPOSE DEVELOPMENT OVERLAY
+# ------------------------------------------------------------------------------
+# This file is used to extend the base docker-compose.yml configuration for local
+# development and testing. It enables live code updates via host volume bind-mounts
+# and starts the Adminer database management panel.
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+# ------------------------------------------------------------------------------
+
+services:
+  app:
+    volumes:
+      - .:/app
+      # Anonymous volume prevents the host's vendor folder from overwriting the container's built vendor directory
+      - /app/vendor
+    environment:
+      - LOGFILE_NAME="server-laravel-dev.log"
+
+  adminer:
+    image: adminer:5
+    ports:
+      - "127.0.0.1:${ADMINER_PORT:-800}:8080"
+    depends_on:
+      - db
