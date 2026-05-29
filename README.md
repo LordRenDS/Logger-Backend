@@ -130,9 +130,3 @@ If you encounter 500 errors related to logs or cache, reset permissions:
   ```bash
   docker compose exec app chown -R www-data:www-data storage bootstrap/cache
   ```
-
-## 📝 Commit Convention
-- Use a list with a `-` separator.
-- Lowercase only.
-- English language.
-- Example: `- fixed user factory relationship`
