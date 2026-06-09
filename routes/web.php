@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\PcActivityController;
+use App\Http\Controllers\Web\PcStatusController;
 use App\Http\Controllers\Web\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::get('/pcs/{pc}/activities', [PcActivityController::class, 'index'])->name('pcs.activities');
+    Route::get('/pcs/{pc}/statuses', [PcStatusController::class, 'index'])->name('pcs.statuses');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
