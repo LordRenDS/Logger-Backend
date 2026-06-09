@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SyncProcessesRequest;
 use App\Http\Resources\ProcessResource;
 use App\Models\Pc;
 use App\Services\SyncService;
-use App\Http\Requests\SyncProcessesRequest;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PcProcessController extends Controller
 {
@@ -25,6 +25,7 @@ class PcProcessController extends Controller
     public function index(Pc $pc): AnonymousResourceCollection
     {
         $this->authorize('view', $pc);
+
         return ProcessResource::collection($pc->processes()->paginate());
     }
 

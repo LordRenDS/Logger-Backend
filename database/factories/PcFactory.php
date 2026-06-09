@@ -2,11 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\Pc;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Pc>
+ * @extends Factory<Pc>
  */
 class PcFactory extends Factory
 {
@@ -20,7 +21,7 @@ class PcFactory extends Factory
         return [
             'user_id' => User::factory(),
             'unique_id' => fake()->uuid(),
-            'name' => fake()->word() . ' PC',
+            'name' => fake()->word().' PC',
             'last_seen_at' => now(),
         ];
     }

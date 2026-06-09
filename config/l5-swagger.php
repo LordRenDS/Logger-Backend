@@ -1,5 +1,8 @@
 <?php
 
+use OpenApi\Annotations\OpenApi;
+use OpenApi\scan;
+
 return [
     'default' => 'default',
     'documentations' => [
@@ -119,8 +122,8 @@ return [
              * @link https://zircote.github.io/swagger-php/reference/processors.html
              */
             'default_processors_configuration' => [
-                /** Example */
-                /**
+            /** Example */
+            /**
              * 'operationId.hash' => true,
              * 'pathFilter' => [
              * 'tags' => [
@@ -134,14 +137,14 @@ return [
             /**
              * analyser: defaults to \OpenApi\StaticAnalyser .
              *
-             * @see \OpenApi\scan
+             * @see scan
              */
             'analyser' => null,
 
             /**
              * analysis: defaults to a new \OpenApi\Analysis .
              *
-             * @see \OpenApi\scan
+             * @see scan
              */
             'analysis' => null,
 
@@ -149,7 +152,7 @@ return [
              * Custom query path processors classes.
              *
              * @link https://github.com/zircote/swagger-php/tree/master/Examples/processors/schema-query-parameter
-             * @see \OpenApi\scan
+             * @see scan
              */
             'processors' => [
                 // new \App\SwaggerProcessors\SchemaQueryParameter(),
@@ -158,7 +161,7 @@ return [
             /**
              * pattern: string       $pattern File pattern(s) to scan (default: *.php) .
              *
-             * @see \OpenApi\scan
+             * @see scan
              */
             'pattern' => null,
 
@@ -173,7 +176,7 @@ return [
              * Allows to generate specs either for OpenAPI 3.0.0 or OpenAPI 3.1.0.
              * By default the spec will be in version 3.0.0
              */
-            'open_api_spec_version' => env('L5_SWAGGER_OPEN_API_SPEC_VERSION', \OpenApi\Annotations\OpenApi::VERSION_3_1_0),
+            'open_api_spec_version' => env('L5_SWAGGER_OPEN_API_SPEC_VERSION', OpenApi::VERSION_3_1_0),
         ],
 
         /*
@@ -229,8 +232,8 @@ return [
                 'jwt' => [ // Unique name of security
                     'type' => 'http', // The type of the security scheme. Valid values are "basic", "apiKey" or "oauth2".
                     'description' => 'jwt token',
-                    "scheme" => "Bearer",
-                    "bearerFormat" => "JWT"
+                    'scheme' => 'Bearer',
+                    'bearerFormat' => 'JWT',
                 ],
             ],
             'security' => [
@@ -246,7 +249,7 @@ return [
 
                     'passport' => []
                     */
-                    "jwt" => []
+                    'jwt' => [],
                 ],
             ],
         ],

@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SyncSchedulesRequest;
 use App\Http\Resources\ScheduleResource;
 use App\Models\Pc;
 use App\Services\SyncService;
-use App\Http\Requests\SyncSchedulesRequest;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PcScheduleController extends Controller
 {
@@ -25,6 +25,7 @@ class PcScheduleController extends Controller
     public function index(Pc $pc): AnonymousResourceCollection
     {
         $this->authorize('view', $pc);
+
         return ScheduleResource::collection($pc->schedules()->paginate());
     }
 

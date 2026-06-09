@@ -3,10 +3,11 @@
 namespace Database\Factories;
 
 use App\Models\Pc;
+use App\Models\Process;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Process>
+ * @extends Factory<Process>
  */
 class ProcessFactory extends Factory
 {
@@ -20,7 +21,7 @@ class ProcessFactory extends Factory
         return [
             'pc_id' => Pc::factory(),
             'process_start' => now(),
-            'process_name' => $this->faker->word() . '.exe',
+            'process_name' => $this->faker->word().'.exe',
             'window_name' => $this->faker->sentence(),
             'duration' => $this->faker->numberBetween(10, 3600),
         ];

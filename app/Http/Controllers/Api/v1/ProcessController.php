@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateProcessRequest;
 use App\Http\Resources\ProcessResource;
 use App\Models\Process;
-use App\Http\Requests\UpdateProcessRequest;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\JsonResponse;
 
 class ProcessController extends Controller
 {
@@ -16,6 +16,7 @@ class ProcessController extends Controller
     public function show(Process $process): ProcessResource
     {
         $this->authorize('view', $process->pc);
+
         return new ProcessResource($process);
     }
 
@@ -23,6 +24,7 @@ class ProcessController extends Controller
     {
         $this->authorize('update', $process->pc);
         $process->update($request->validated());
+
         return new ProcessResource($process);
     }
 
@@ -30,6 +32,7 @@ class ProcessController extends Controller
     {
         $this->authorize('delete', $process->pc);
         $process->delete();
+
         return response()->json(null, 204);
     }
 }

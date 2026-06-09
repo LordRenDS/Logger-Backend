@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StorePcRequest;
+use App\Http\Requests\UpdatePcRequest;
 use App\Http\Resources\PcResource;
 use App\Models\Pc;
 use App\Services\PcService;
-use App\Http\Requests\StorePcRequest;
-use App\Http\Requests\UpdatePcRequest;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PcController extends Controller
 {
@@ -27,6 +27,7 @@ class PcController extends Controller
     public function index(): AnonymousResourceCollection
     {
         $pcs = Pc::where('user_id', Auth::id())->get();
+
         return PcResource::collection($pcs);
     }
 
@@ -38,12 +39,14 @@ class PcController extends Controller
             $validated['unique_id'],
             $validated['name'] ?? null
         );
+
         return (new PcResource($pc))->response()->setStatusCode(201);
     }
 
     public function show(Pc $pc): PcResource
     {
         $this->authorize('view', $pc);
+
         return new PcResource($pc);
     }
 
@@ -51,6 +54,7 @@ class PcController extends Controller
     {
         $this->authorize('update', $pc);
         $pc->update($request->validated());
+
         return new PcResource($pc);
     }
 
@@ -58,6 +62,7 @@ class PcController extends Controller
     {
         $this->authorize('delete', $pc);
         $pc->delete();
+
         return response()->json(null, 204);
     }
 }

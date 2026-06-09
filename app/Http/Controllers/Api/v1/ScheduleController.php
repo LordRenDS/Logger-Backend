@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ScheduleResource;
-use App\Models\Schedule;
-use App\Models\PcStatus;
 use App\Http\Requests\UpdateScheduleRequest;
+use App\Http\Resources\ScheduleResource;
+use App\Models\PcStatus;
+use App\Models\Schedule;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ScheduleController extends Controller
 {
@@ -18,6 +18,7 @@ class ScheduleController extends Controller
     public function show(Schedule $schedule): ScheduleResource
     {
         $this->authorize('view', $schedule->pc);
+
         return new ScheduleResource($schedule);
     }
 
@@ -34,7 +35,7 @@ class ScheduleController extends Controller
 
         if (array_key_exists('status', $validated)) {
             $status = PcStatus::where('status', $validated['status'])->first();
-            if (!$status) {
+            if (! $status) {
                 throw ValidationException::withMessages([
                     'status' => ['The specified status could not be resolved.'],
                 ]);
@@ -43,6 +44,7 @@ class ScheduleController extends Controller
         }
 
         $schedule->update($data);
+
         return new ScheduleResource($schedule);
     }
 
@@ -50,6 +52,7 @@ class ScheduleController extends Controller
     {
         $this->authorize('delete', $schedule->pc);
         $schedule->delete();
+
         return response()->json(null, 204);
     }
 }

@@ -4,9 +4,9 @@ namespace Tests\Feature;
 
 use App\Models\Pc;
 use App\Models\PcStatus;
-use App\Models\User;
 use App\Models\Process;
 use App\Models\Schedule;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -15,6 +15,7 @@ class SyncTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected string $token;
 
     protected function setUp(): void
@@ -33,7 +34,7 @@ class SyncTest extends TestCase
         ]);
 
         $this->token = $response->json('access_token');
-        
+
         PcStatus::create(['status' => 'on']);
         PcStatus::create(['status' => 'off']);
     }
@@ -41,7 +42,7 @@ class SyncTest extends TestCase
     public function test_can_register_and_list_pcs(): void
     {
         // Register PC
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->postJson('/api/v1/pcs', [
                 'unique_id' => 'pc-123',
                 'name' => 'Work PC',
@@ -51,7 +52,7 @@ class SyncTest extends TestCase
             ->assertJsonPath('data.unique_id', 'pc-123');
 
         // List PCs
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->getJson('/api/v1/pcs');
 
         $response->assertStatus(200)
@@ -67,15 +68,15 @@ class SyncTest extends TestCase
             'last_seen_at' => now(),
         ]);
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->postJson("/api/v1/pcs/{$pc->unique_id}/processes", [
                 'data' => [
-                   [
-                       'process_start' => now()->toDateTimeString(),
-                       'process_name' => 'chrome.exe',
-                       'window_name' => 'Google Search',
-                       'duration' => 60,
-                   ]
+                    [
+                        'process_start' => now()->toDateTimeString(),
+                        'process_name' => 'chrome.exe',
+                        'window_name' => 'Google Search',
+                        'duration' => 60,
+                    ],
                 ],
             ]);
 
@@ -94,13 +95,13 @@ class SyncTest extends TestCase
             'last_seen_at' => now(),
         ]);
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->postJson("/api/v1/pcs/{$pc->unique_id}/schedules", [
                 'data' => [
-                   [
-                       'timestamp' => now()->toDateTimeString(),
-                       'status' => 'on',
-                   ]
+                    [
+                        'timestamp' => now()->toDateTimeString(),
+                        'status' => 'on',
+                    ],
                 ],
             ]);
 
@@ -125,7 +126,7 @@ class SyncTest extends TestCase
             'last_seen_at' => now(),
         ]);
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->getJson("/api/v1/pcs/{$pc->unique_id}");
 
         $response->assertStatus(403);
@@ -141,7 +142,7 @@ class SyncTest extends TestCase
             'last_seen_at' => now(),
         ]);
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->getJson("/api/v1/pcs/{$pc->unique_id}");
 
         $response->assertStatus(200)
@@ -158,7 +159,7 @@ class SyncTest extends TestCase
             'last_seen_at' => now(),
         ]);
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->putJson("/api/v1/pcs/{$pc->unique_id}", [
                 'name' => 'Updated Name',
             ]);
@@ -200,7 +201,7 @@ class SyncTest extends TestCase
         $this->assertDatabaseHas('processes', ['id' => $process->id]);
         $this->assertDatabaseHas('schedules', ['id' => $schedule->id]);
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->deleteJson("/api/v1/pcs/{$pc->unique_id}");
 
         $response->assertStatus(204);
@@ -226,14 +227,14 @@ class SyncTest extends TestCase
         ]);
 
         // Try update
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->putJson("/api/v1/pcs/{$pc->unique_id}", [
                 'name' => 'Hacked Name',
             ]);
         $response->assertStatus(403);
 
         // Try delete
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->deleteJson("/api/v1/pcs/{$pc->unique_id}");
         $response->assertStatus(403);
     }
@@ -264,7 +265,7 @@ class SyncTest extends TestCase
             'duration' => 15,
         ]);
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->getJson("/api/v1/pcs/{$pc->unique_id}/processes");
 
         $response->assertStatus(200)
@@ -286,8 +287,38 @@ class SyncTest extends TestCase
             'last_seen_at' => now(),
         ]);
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->getJson("/api/v1/pcs/{$pc->unique_id}/processes");
+
+        $response->assertStatus(403);
+    }
+
+    public function test_cannot_sync_processes_to_other_users_pc(): void
+    {
+        $otherUser = User::create([
+            'name' => 'Jane Doe',
+            'email' => 'jane@example.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        $pc = Pc::create([
+            'user_id' => $otherUser->id,
+            'unique_id' => 'pc-other-proc-sync',
+            'name' => 'Jane PC',
+            'last_seen_at' => now(),
+        ]);
+
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
+            ->postJson("/api/v1/pcs/{$pc->unique_id}/processes", [
+                'data' => [
+                    [
+                        'process_start' => now()->toDateTimeString(),
+                        'process_name' => 'chrome.exe',
+                        'window_name' => 'Google Search',
+                        'duration' => 60,
+                    ],
+                ],
+            ]);
 
         $response->assertStatus(403);
     }
@@ -309,7 +340,7 @@ class SyncTest extends TestCase
             'duration' => 30,
         ]);
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->getJson("/api/v1/processes/{$process->id}");
 
         $response->assertStatus(200)
@@ -333,7 +364,7 @@ class SyncTest extends TestCase
             'duration' => 30,
         ]);
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->putJson("/api/v1/processes/{$process->id}", [
                 'process_name' => 'firefox.exe',
                 'duration' => 50,
@@ -367,7 +398,7 @@ class SyncTest extends TestCase
             'duration' => 30,
         ]);
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->deleteJson("/api/v1/processes/{$process->id}");
 
         $response->assertStatus(204);
@@ -399,19 +430,19 @@ class SyncTest extends TestCase
         ]);
 
         // Try show
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->getJson("/api/v1/processes/{$process->id}");
         $response->assertStatus(403);
 
         // Try update
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->putJson("/api/v1/processes/{$process->id}", [
                 'process_name' => 'hacked.exe',
             ]);
         $response->assertStatus(403);
 
         // Try delete
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->deleteJson("/api/v1/processes/{$process->id}");
         $response->assertStatus(403);
     }
@@ -441,7 +472,7 @@ class SyncTest extends TestCase
             'pc_status_id' => $statusOff->id,
         ]);
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->getJson("/api/v1/pcs/{$pc->unique_id}/schedules");
 
         $response->assertStatus(200)
@@ -463,8 +494,36 @@ class SyncTest extends TestCase
             'last_seen_at' => now(),
         ]);
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->getJson("/api/v1/pcs/{$pc->unique_id}/schedules");
+
+        $response->assertStatus(403);
+    }
+
+    public function test_cannot_sync_schedules_to_other_users_pc(): void
+    {
+        $otherUser = User::create([
+            'name' => 'Jane Doe',
+            'email' => 'jane@example.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        $pc = Pc::create([
+            'user_id' => $otherUser->id,
+            'unique_id' => 'pc-other-sched-sync',
+            'name' => 'Jane PC',
+            'last_seen_at' => now(),
+        ]);
+
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
+            ->postJson("/api/v1/pcs/{$pc->unique_id}/schedules", [
+                'data' => [
+                    [
+                        'timestamp' => now()->toDateTimeString(),
+                        'status' => 'on',
+                    ],
+                ],
+            ]);
 
         $response->assertStatus(403);
     }
@@ -485,7 +544,7 @@ class SyncTest extends TestCase
             'pc_status_id' => $statusOn->id,
         ]);
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->getJson("/api/v1/schedules/{$schedule->id}");
 
         $response->assertStatus(200)
@@ -508,7 +567,7 @@ class SyncTest extends TestCase
             'pc_status_id' => $statusOn->id,
         ]);
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->putJson("/api/v1/schedules/{$schedule->id}", [
                 'status' => 'off',
             ]);
@@ -539,7 +598,7 @@ class SyncTest extends TestCase
             'pc_status_id' => $statusOn->id,
         ]);
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->putJson("/api/v1/schedules/{$schedule->id}", [
                 'status' => 'invalid_status',
             ]);
@@ -563,7 +622,7 @@ class SyncTest extends TestCase
             'pc_status_id' => $statusOn->id,
         ]);
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->deleteJson("/api/v1/schedules/{$schedule->id}");
 
         $response->assertStatus(204);
@@ -594,19 +653,19 @@ class SyncTest extends TestCase
         ]);
 
         // Try show
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->getJson("/api/v1/schedules/{$schedule->id}");
         $response->assertStatus(403);
 
         // Try update
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->putJson("/api/v1/schedules/{$schedule->id}", [
                 'status' => 'off',
             ]);
         $response->assertStatus(403);
 
         // Try delete
-        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$this->token)
             ->deleteJson("/api/v1/schedules/{$schedule->id}");
         $response->assertStatus(403);
     }

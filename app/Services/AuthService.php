@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthService
 {
@@ -28,7 +28,7 @@ class AuthService
      */
     public function login(array $credentials): ?string
     {
-        if (!$token = Auth::guard('api')->attempt($credentials)) {
+        if (! $token = Auth::guard('api')->attempt($credentials)) {
             return null;
         }
 

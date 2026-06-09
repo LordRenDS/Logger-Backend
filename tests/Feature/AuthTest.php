@@ -66,7 +66,7 @@ class AuthTest extends TestCase
 
         $token = $loginResponse->json('access_token');
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
             ->getJson('/api/v1/auth/me');
 
         $response->assertStatus(200)

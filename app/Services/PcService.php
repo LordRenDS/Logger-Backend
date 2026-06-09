@@ -5,16 +5,12 @@ namespace App\Services;
 use App\Models\Pc;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class PcService
 {
     /**
      * Find a PC by its unique ID or create a new one for the given user.
-     *
-     * @param User $user
-     * @param string $uniqueId
-     * @param string|null $name
-     * @return Pc
      */
     public function findOrCreatePc(User $user, string $uniqueId, ?string $name = null): Pc
     {
@@ -22,7 +18,7 @@ class PcService
 
         if ($pc) {
             if ($pc->user_id !== $user->id) {
-                throw new \Illuminate\Auth\Access\AuthorizationException('This device is registered to another user.');
+                throw new AuthorizationException('This device is registered to another user.');
             }
 
             $pc->update([

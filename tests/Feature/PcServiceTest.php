@@ -17,7 +17,7 @@ class PcServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->pcService = new PcService();
+        $this->pcService = new PcService;
     }
 
     public function test_it_creates_a_new_pc_if_not_exists()

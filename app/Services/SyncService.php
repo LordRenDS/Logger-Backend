@@ -12,10 +12,6 @@ class SyncService
 {
     /**
      * Sync processes activity logs using batch upsertion.
-     *
-     * @param Pc $pc
-     * @param array $data
-     * @return int
      */
     public function syncProcesses(Pc $pc, array $data): int
     {
@@ -40,16 +36,13 @@ class SyncService
                 ['pc_id', 'process_start', 'process_name', 'window_name'],
                 ['duration', 'updated_at']
             );
+
             return count($records);
         });
     }
 
     /**
      * Sync PC schedules (status history) using batch insertion and status mapping cache.
-     *
-     * @param Pc $pc
-     * @param array $data
-     * @return int
      */
     public function syncSchedules(Pc $pc, array $data): int
     {
@@ -75,6 +68,7 @@ class SyncService
 
         return DB::transaction(function () use ($records) {
             Schedule::insert($records);
+
             return count($records);
         });
     }
