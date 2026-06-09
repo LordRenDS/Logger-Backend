@@ -6,10 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\PcResource;
 use App\Models\Pc;
 use App\Services\PcService;
+use App\Http\Requests\StorePcRequest;
+use App\Http\Requests\UpdatePcRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PcController extends Controller
@@ -23,47 +24,34 @@ class PcController extends Controller
         $this->pcService = $pcService;
     }
 
-    public function index(): JsonResponse
+    public function index(): AnonymousResourceCollection
     {
         $pcs = Pc::where('user_id', Auth::id())->get();
-        return response()->json(PcResource::collection($pcs));
+        return PcResource::collection($pcs);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StorePcRequest $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'unique_id' => 'required|string',
-            'name' => 'nullable|string',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        $pc = $this->pcService->findOrCreatePc(Auth::user(), $request->unique_id, $request->name);
-        return response()->json(new PcResource($pc), 201);
+        $validated = $request->validated();
+        $pc = $this->pcService->findOrCreatePc(
+            Auth::user(),
+            $validated['unique_id'],
+            $validated['name'] ?? null
+        );
+        return (new PcResource($pc))->response()->setStatusCode(201);
     }
 
-    public function show(Pc $pc): JsonResponse
+    public function show(Pc $pc): PcResource
     {
         $this->authorize('view', $pc);
-        return response()->json(new PcResource($pc));
+        return new PcResource($pc);
     }
 
-    public function update(Request $request, Pc $pc): JsonResponse
+    public function update(UpdatePcRequest $request, Pc $pc): PcResource
     {
         $this->authorize('update', $pc);
-
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        $pc->update($request->only('name'));
-        return response()->json(new PcResource($pc));
+        $pc->update($request->validated());
+        return new PcResource($pc);
     }
 
     public function destroy(Pc $pc): JsonResponse

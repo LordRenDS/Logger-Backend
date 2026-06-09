@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ProcessResource;
 use App\Models\Pc;
 use App\Services\SyncService;
+use App\Http\Requests\SyncProcessesRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PcProcessController extends Controller
@@ -22,29 +22,17 @@ class PcProcessController extends Controller
         $this->syncService = $syncService;
     }
 
-    public function index(Pc $pc): JsonResponse
+    public function index(Pc $pc): AnonymousResourceCollection
     {
         $this->authorize('view', $pc);
-        return response()->json(ProcessResource::collection($pc->processes()->paginate()));
+        return ProcessResource::collection($pc->processes()->paginate());
     }
 
-    public function store(Request $request, Pc $pc): JsonResponse
+    public function store(SyncProcessesRequest $request, Pc $pc): JsonResponse
     {
         $this->authorize('view', $pc);
 
-        $validator = Validator::make($request->all(), [
-            'data' => 'required|array',
-            'data.*.process_start' => 'required|date',
-            'data.*.process_name' => 'required|string',
-            'data.*.window_name' => 'required|string',
-            'data.*.duration' => 'required|integer',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        $count = $this->syncService->syncProcesses($pc, $request->input('data'));
+        $count = $this->syncService->syncProcesses($pc, $request->validated()['data']);
 
         return response()->json([
             'message' => 'Processes synced successfully',

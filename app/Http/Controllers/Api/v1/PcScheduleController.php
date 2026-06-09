@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ScheduleResource;
 use App\Models\Pc;
 use App\Services\SyncService;
+use App\Http\Requests\SyncSchedulesRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PcScheduleController extends Controller
@@ -22,27 +22,17 @@ class PcScheduleController extends Controller
         $this->syncService = $syncService;
     }
 
-    public function index(Pc $pc): JsonResponse
+    public function index(Pc $pc): AnonymousResourceCollection
     {
         $this->authorize('view', $pc);
-        return response()->json(ScheduleResource::collection($pc->schedules()->paginate()));
+        return ScheduleResource::collection($pc->schedules()->paginate());
     }
 
-    public function store(Request $request, Pc $pc): JsonResponse
+    public function store(SyncSchedulesRequest $request, Pc $pc): JsonResponse
     {
         $this->authorize('view', $pc);
 
-        $validator = Validator::make($request->all(), [
-            'data' => 'required|array',
-            'data.*.timestamp' => 'required|date',
-            'data.*.status' => 'required|string|in:on,off',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        $count = $this->syncService->syncSchedules($pc, $request->input('data'));
+        $count = $this->syncService->syncSchedules($pc, $request->validated()['data']);
 
         return response()->json([
             'message' => 'Schedules synced successfully',
