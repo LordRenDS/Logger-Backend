@@ -45,4 +45,9 @@ if [ "${1#-}" != "$1" ]; then
 	set -- apache2-foreground "$@"
 fi
 
+# Ensure correct ownership and permissions for Apache
+echo "Ensuring correct permissions..."
+chown -R www-data:www-data /app/storage /app/bootstrap/cache /app/.env || true
+chmod -R 775 /app/storage /app/bootstrap/cache || true
+
 exec "$@"
