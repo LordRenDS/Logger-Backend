@@ -39,4 +39,9 @@ class Pc extends Model
     {
         return $this->hasMany(Schedule::class);
     }
+
+    public function getRouteKeyName(): string
+    {
+        return 'unique_id';
+    }
 }
