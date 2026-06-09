@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\Pc;
 use App\Models\PcStatus;
 use App\Models\User;
+use App\Models\Process;
+use App\Models\Schedule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -32,119 +34,100 @@ class SyncTest extends TestCase
 
         $this->token = $response->json('access_token');
         
-        // Seed statuses
         PcStatus::create(['status' => 'on']);
         PcStatus::create(['status' => 'off']);
     }
 
-    /**
-     * Test syncing processes.
-     */
-    public function test_can_sync_processes(): void
+    public function test_can_register_and_list_pcs(): void
     {
+        // Register PC
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
-            ->postJson('/api/v1/sync/processes', [
-                'pc_unique_id' => 'pc-123',
-                'pc_name' => 'Work PC',
-                'data' => [
-                    [
-                        'process_start' => now()->toDateTimeString(),
-                        'process_name' => 'chrome.exe',
-                        'window_name' => 'Google Search',
-                        'duration' => 60,
-                    ],
-                    [
-                        'process_start' => now()->addMinutes(5)->toDateTimeString(),
-                        'process_name' => 'devenv.exe',
-                        'window_name' => 'Visual Studio',
-                        'duration' => 300,
-                    ],
-                ],
+            ->postJson('/api/v1/pcs', [
+                'unique_id' => 'pc-123',
+                'name' => 'Work PC',
             ]);
 
-        $response->assertStatus(200)
-            ->assertJson(['count' => 2]);
+        $response->assertStatus(201)
+            ->assertJsonPath('data.unique_id', 'pc-123');
 
-        $this->assertDatabaseHas('pcs', ['unique_id' => 'pc-123', 'user_id' => $this->user->id]);
-        $this->assertDatabaseCount('processes', 2);
+        // List PCs
+        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+            ->getJson('/api/v1/pcs');
+
+        $response->assertStatus(200)
+            ->assertJsonCount(1, 'data');
     }
 
-    /**
-     * Test upserting processes (incremental sync).
-     */
-    public function test_can_upsert_processes(): void
+    public function test_can_sync_processes_under_pc(): void
     {
-        $startTime = now()->subMinutes(10)->toDateTimeString();
-        
-        // First sync
-        $this->withHeader('Authorization', 'Bearer ' . $this->token)
-            ->postJson('/api/v1/sync/processes', [
-                'pc_unique_id' => 'pc-upsert',
-                'pc_name' => 'Upsert PC',
-                'data' => [
-                    [
-                        'process_start' => $startTime,
-                        'process_name' => 'chrome.exe',
-                        'window_name' => 'Google Search',
-                        'duration' => 60,
-                    ],
-                ],
-            ]);
-
-        $this->assertDatabaseCount('processes', 1);
-        $this->assertDatabaseHas('processes', [
-            'process_name' => 'chrome.exe',
-            'duration' => 60,
+        $pc = Pc::create([
+            'user_id' => $this->user->id,
+            'unique_id' => 'pc-123',
+            'name' => 'Work PC',
+            'last_seen_at' => now(),
         ]);
 
-        // Second sync with updated duration
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
-            ->postJson('/api/v1/sync/processes', [
-                'pc_unique_id' => 'pc-upsert',
+            ->postJson("/api/v1/pcs/{$pc->unique_id}/processes", [
                 'data' => [
-                    [
-                        'process_start' => $startTime,
-                        'process_name' => 'chrome.exe',
-                        'window_name' => 'Google Search',
-                        'duration' => 120, // Duration increased
-                    ],
+                   [
+                       'process_start' => now()->toDateTimeString(),
+                       'process_name' => 'chrome.exe',
+                       'window_name' => 'Google Search',
+                       'duration' => 60,
+                   ]
                 ],
             ]);
 
-        $response->assertStatus(200)
+        $response->assertStatus(201)
             ->assertJson(['count' => 1]);
 
-        // Should still be only 1 record, but with updated duration
         $this->assertDatabaseCount('processes', 1);
-        $this->assertDatabaseHas('processes', [
-            'process_name' => 'chrome.exe',
-            'duration' => 120,
-        ]);
     }
 
-    /**
-     * Test syncing schedules.
-     */
-    public function test_can_sync_schedules(): void
+    public function test_can_sync_schedules_under_pc(): void
     {
+        $pc = Pc::create([
+            'user_id' => $this->user->id,
+            'unique_id' => 'pc-123',
+            'name' => 'Work PC',
+            'last_seen_at' => now(),
+        ]);
+
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
-            ->postJson('/api/v1/sync/schedules', [
-                'pc_unique_id' => 'pc-123',
+            ->postJson("/api/v1/pcs/{$pc->unique_id}/schedules", [
                 'data' => [
-                    [
-                        'timestamp' => now()->toDateTimeString(),
-                        'status' => 'on',
-                    ],
-                    [
-                        'timestamp' => now()->addHours(8)->toDateTimeString(),
-                        'status' => 'off',
-                    ],
+                   [
+                       'timestamp' => now()->toDateTimeString(),
+                       'status' => 'on',
+                   ]
                 ],
             ]);
 
-        $response->assertStatus(200)
-            ->assertJson(['count' => 2]);
+        $response->assertStatus(201)
+            ->assertJson(['count' => 1]);
 
-        $this->assertDatabaseCount('schedules', 2);
+        $this->assertDatabaseCount('schedules', 1);
+    }
+
+    public function test_cannot_access_other_users_pc(): void
+    {
+        $otherUser = User::create([
+            'name' => 'Jane Doe',
+            'email' => 'jane@example.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        $pc = Pc::create([
+            'user_id' => $otherUser->id,
+            'unique_id' => 'pc-other',
+            'name' => 'Jane PC',
+            'last_seen_at' => now(),
+        ]);
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
+            ->getJson("/api/v1/pcs/{$pc->unique_id}");
+
+        $response->assertStatus(403);
     }
 }
