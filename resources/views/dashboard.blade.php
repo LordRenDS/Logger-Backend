@@ -79,8 +79,9 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $pc->name ?? 'Unnamed PC' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $pc->unique_id }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $pc->last_seen_at?->diffForHumans() ?? 'Never' }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
                                 <a href="{{ route('pcs.activities', $pc) }}" class="text-indigo-600 hover:text-indigo-900">View Activities</a>
+                                <a href="{{ route('pcs.statuses', $pc) }}" class="text-green-600 hover:text-green-900">View Statuses</a>
                             </td>
                         </tr>
                     @endforeach
