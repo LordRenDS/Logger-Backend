@@ -25,6 +25,6 @@ composer.lock
 docker.ps1
 /schemes
 .superpowers/
-GEMINI.md
+AGENTS.md
 docs/superpowers/
 .antigravitycli/
