@@ -5,9 +5,10 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Services\AuthService;
+use App\Http\Requests\ApiLoginRequest;
+use App\Http\Requests\ApiRegisterRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -41,20 +42,9 @@ class AuthController extends Controller
      *     @OA\Response(response=400, description="Invalid input")
      * )
      */
-    public function register(Request $request): JsonResponse
+    public function register(ApiRegisterRequest $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-            'role' => 'sometimes|string|in:admin,user',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        $token = $this->authService->register($request->all());
+        $token = $this->authService->register($request->validated());
 
         return $this->respondWithToken($token)->setStatusCode(201);
     }
@@ -80,18 +70,9 @@ class AuthController extends Controller
      *     @OA\Response(response=422, description="Validation error")
      * )
      */
-    public function login(Request $request): JsonResponse
+    public function login(ApiLoginRequest $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required|string|min:6',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        if (! $token = $this->authService->login($request->only('email', 'password'))) {
+        if (! $token = $this->authService->login($request->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
