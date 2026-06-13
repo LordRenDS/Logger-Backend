@@ -86,7 +86,7 @@ class PcScheduleController extends Controller
     {
         $this->authorize('view', $pc);
 
-        return ScheduleResource::collection($pc->schedules()->paginate());
+        return ScheduleResource::collection($pc->schedules()->with('pcStatus')->paginate());
     }
 
     /**

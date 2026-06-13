@@ -50,6 +50,7 @@ class ScheduleController extends Controller
      */
     public function show(Schedule $schedule): ScheduleResource
     {
+        $schedule->load(['pc', 'pcStatus']);
         $this->authorize('view', $schedule->pc);
 
         return new ScheduleResource($schedule);
@@ -96,6 +97,7 @@ class ScheduleController extends Controller
      */
     public function update(UpdateScheduleRequest $request, Schedule $schedule): ScheduleResource
     {
+        $schedule->load('pc');
         $this->authorize('update', $schedule->pc);
 
         $validated = $request->validated();
@@ -116,6 +118,7 @@ class ScheduleController extends Controller
         }
 
         $schedule->update($data);
+        $schedule->load('pcStatus');
 
         return new ScheduleResource($schedule);
     }
