@@ -28,29 +28,38 @@ class PcScheduleController extends Controller
      *     tags={"Schedules"},
      *     summary="List paginated schedules (power status history) for a specific PC",
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="pc",
      *         in="path",
      *         required=true,
      *         description="The unique_id of the PC",
+     *
      *         @OA\Schema(type="string")
      *     ),
+     *
      *     @OA\Parameter(
      *         name="page",
      *         in="query",
      *         required=false,
      *         description="Page number",
+     *
      *         @OA\Schema(type="integer")
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Paginated schedules list",
+     *
      *         @OA\JsonContent(
      *             type="object",
+     *
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
+     *
      *                 @OA\Items(
+     *
      *                     @OA\Property(property="id", type="integer", example=1),
      *                     @OA\Property(property="pc_id", type="integer", example=1),
      *                     @OA\Property(property="timestamp", type="string", format="date-time", example="2026-06-13T12:00:00Z"),
@@ -77,6 +86,7 @@ class PcScheduleController extends Controller
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(response=401, description="Unauthorized"),
      *     @OA\Response(response=403, description="Forbidden (not user's device)"),
      *     @OA\Response(response=404, description="PC not found")
@@ -95,38 +105,49 @@ class PcScheduleController extends Controller
      *     tags={"Schedules"},
      *     summary="Bulk sync schedules (power status history) for a specific PC",
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="pc",
      *         in="path",
      *         required=true,
      *         description="The unique_id of the PC",
+     *
      *         @OA\Schema(type="string")
      *     ),
+     *
      *     @OA\RequestBody(
      *         required=true,
+     *
      *         @OA\JsonContent(
      *             required={"data"},
+     *
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
      *                 description="Array of schedule status logs to sync",
+     *
      *                 @OA\Items(
      *                     required={"timestamp", "status"},
+     *
      *                     @OA\Property(property="timestamp", type="string", format="date-time", example="2026-06-13T12:00:00Z"),
      *                     @OA\Property(property="status", type="string", enum={"on", "off"}, example="on")
      *                 )
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=201,
      *         description="Schedules synced successfully",
+     *
      *         @OA\JsonContent(
      *             type="object",
+     *
      *             @OA\Property(property="message", type="string", example="Schedules synced successfully"),
      *             @OA\Property(property="count", type="integer", example=1)
      *         )
      *     ),
+     *
      *     @OA\Response(response=401, description="Unauthorized"),
      *     @OA\Response(response=403, description="Forbidden (not user's device)"),
      *     @OA\Response(response=422, description="Validation error")

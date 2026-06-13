@@ -21,18 +21,23 @@ class ScheduleController extends Controller
      *     tags={"Schedules"},
      *     summary="Get details of a specific schedule status log",
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="schedule",
      *         in="path",
      *         required=true,
      *         description="The ID of the schedule log",
+     *
      *         @OA\Schema(type="integer")
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
+     *
      *         @OA\JsonContent(
      *             type="object",
+     *
      *             @OA\Property(
      *                 property="data",
      *                 type="object",
@@ -43,6 +48,7 @@ class ScheduleController extends Controller
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(response=401, description="Unauthorized"),
      *     @OA\Response(response=403, description="Forbidden (not user's device)"),
      *     @OA\Response(response=404, description="Schedule log not found")
@@ -62,25 +68,33 @@ class ScheduleController extends Controller
      *     tags={"Schedules"},
      *     summary="Update a specific schedule status log",
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="schedule",
      *         in="path",
      *         required=true,
      *         description="The ID of the schedule log",
+     *
      *         @OA\Schema(type="integer")
      *     ),
+     *
      *     @OA\RequestBody(
      *         required=true,
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="timestamp", type="string", format="date-time", example="2026-06-13T12:00:00Z"),
      *             @OA\Property(property="status", type="string", enum={"on", "off"}, example="off")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Schedule log updated successfully",
+     *
      *         @OA\JsonContent(
      *             type="object",
+     *
      *             @OA\Property(
      *                 property="data",
      *                 type="object",
@@ -90,6 +104,7 @@ class ScheduleController extends Controller
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(response=401, description="Unauthorized"),
      *     @OA\Response(response=403, description="Forbidden (not user's device)"),
      *     @OA\Response(response=422, description="Validation error")
@@ -129,13 +144,16 @@ class ScheduleController extends Controller
      *     tags={"Schedules"},
      *     summary="Delete a specific schedule status log",
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="schedule",
      *         in="path",
      *         required=true,
      *         description="The ID of the schedule log",
+     *
      *         @OA\Schema(type="integer")
      *     ),
+     *
      *     @OA\Response(response=204, description="Schedule log deleted successfully"),
      *     @OA\Response(response=401, description="Unauthorized"),
      *     @OA\Response(response=403, description="Forbidden (not user's device)"),

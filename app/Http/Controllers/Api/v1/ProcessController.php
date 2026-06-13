@@ -19,18 +19,23 @@ class ProcessController extends Controller
      *     tags={"Processes"},
      *     summary="Get details of a specific process activity log",
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="process",
      *         in="path",
      *         required=true,
      *         description="The ID of the process log",
+     *
      *         @OA\Schema(type="integer")
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
+     *
      *         @OA\JsonContent(
      *             type="object",
+     *
      *             @OA\Property(
      *                 property="data",
      *                 type="object",
@@ -43,6 +48,7 @@ class ProcessController extends Controller
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(response=401, description="Unauthorized"),
      *     @OA\Response(response=403, description="Forbidden (not user's device)"),
      *     @OA\Response(response=404, description="Process log not found")
@@ -61,25 +67,33 @@ class ProcessController extends Controller
      *     tags={"Processes"},
      *     summary="Update a specific process activity log",
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="process",
      *         in="path",
      *         required=true,
      *         description="The ID of the process log",
+     *
      *         @OA\Schema(type="integer")
      *     ),
+     *
      *     @OA\RequestBody(
      *         required=true,
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="duration", type="integer", example=180),
      *             @OA\Property(property="window_name", type="string", example="New Window Title")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Process log updated successfully",
+     *
      *         @OA\JsonContent(
      *             type="object",
+     *
      *             @OA\Property(
      *                 property="data",
      *                 type="object",
@@ -88,6 +102,7 @@ class ProcessController extends Controller
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(response=401, description="Unauthorized"),
      *     @OA\Response(response=403, description="Forbidden (not user's device)"),
      *     @OA\Response(response=422, description="Validation error")
@@ -107,13 +122,16 @@ class ProcessController extends Controller
      *     tags={"Processes"},
      *     summary="Delete a specific process activity log",
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="process",
      *         in="path",
      *         required=true,
      *         description="The ID of the process log",
+     *
      *         @OA\Schema(type="integer")
      *     ),
+     *
      *     @OA\Response(response=204, description="Process log deleted successfully"),
      *     @OA\Response(response=401, description="Unauthorized"),
      *     @OA\Response(response=403, description="Forbidden (not user's device)"),
