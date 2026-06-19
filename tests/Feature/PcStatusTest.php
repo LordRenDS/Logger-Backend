@@ -74,4 +74,18 @@ class PcStatusTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewIs('pcs.statuses');
     }
+
+    public function test_user_can_export_pc_statuses()
+    {
+        $user = User::factory()->create();
+        $pc = Pc::factory()->create(['user_id' => $user->id]);
+        $statusOn = PcStatus::where('status', 'on')->first();
+        Schedule::factory()->create(['pc_id' => $pc->id, 'pc_status_id' => $statusOn->id]);
+
+        $this->actingAs($user);
+        $response = $this->get(route('pcs.statuses.export', $pc));
+
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'text/tab-separated-values; charset=UTF-8');
+    }
 }

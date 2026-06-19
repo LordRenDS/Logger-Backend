@@ -24,7 +24,9 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
     });
 
+    Route::get('/pcs/{pc}/activities/export', [PcActivityController::class, 'export'])->name('pcs.activities.export');
     Route::get('/pcs/{pc}/activities', [PcActivityController::class, 'index'])->name('pcs.activities');
+    Route::get('/pcs/{pc}/statuses/export', [PcStatusController::class, 'export'])->name('pcs.statuses.export');
     Route::get('/pcs/{pc}/statuses', [PcStatusController::class, 'index'])->name('pcs.statuses');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

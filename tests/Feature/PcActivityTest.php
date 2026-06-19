@@ -66,4 +66,17 @@ class PcActivityTest extends TestCase
         $this->assertCount(1, $activities);
         $this->assertEquals('chrome.exe', $activities[0]->process_name);
     }
+
+    public function test_user_can_export_pc_activities()
+    {
+        $user = User::factory()->create();
+        $pc = Pc::factory()->create(['user_id' => $user->id]);
+        Process::factory()->count(3)->create(['pc_id' => $pc->id]);
+
+        $this->actingAs($user);
+        $response = $this->get(route('pcs.activities.export', $pc));
+
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'text/tab-separated-values; charset=UTF-8');
+    }
 }
