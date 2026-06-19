@@ -2,9 +2,16 @@
 
 @section('content')
 <div class="space-y-6">
-    <div>
-        <a href="{{ auth()->user()->role === 'admin' ? route('admin.users.show', $pc->user_id) : route('dashboard') }}" class="text-sm text-indigo-600 hover:text-indigo-900 mb-2 inline-block">&larr; Back to Devices</a>
-        <h1 class="text-3xl font-bold text-gray-900">Status History: {{ $pc->name ?? $pc->unique_id }}</h1>
+    <div class="flex justify-between items-center">
+        <div>
+            <a href="{{ auth()->user()->role === 'admin' ? route('admin.users.show', $pc->user_id) : route('dashboard') }}" class="text-sm text-indigo-600 hover:text-indigo-900 mb-2 inline-block">&larr; Back to Devices</a>
+            <h1 class="text-3xl font-bold text-gray-900">Status History: {{ $pc->name ?? $pc->unique_id }}</h1>
+        </div>
+        <div>
+            <a href="{{ route('pcs.statuses.export', $pc) }}" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150 shadow-sm">
+                Export to TSV
+            </a>
+        </div>
     </div>
 
     <div class="bg-white shadow overflow-hidden sm:rounded-lg">

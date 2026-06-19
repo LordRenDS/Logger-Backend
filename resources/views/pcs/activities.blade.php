@@ -7,7 +7,12 @@
             <a href="{{ auth()->user()->role === 'admin' ? route('admin.users.show', $pc->user_id) : route('dashboard') }}" class="text-sm text-indigo-600 hover:text-indigo-900 mb-2 inline-block">&larr; Back to Devices</a>
             <h1 class="text-3xl font-bold text-gray-900">Activities: {{ $pc->name ?? $pc->unique_id }}</h1>
         </div>
-        <x-per-page-selector />
+        <div class="flex items-center space-x-4">
+            <a href="{{ route('pcs.activities.export', $pc) }}" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150 shadow-sm">
+                Export to TSV
+            </a>
+            <x-per-page-selector />
+        </div>
     </div>
 
     <!-- Filters -->
